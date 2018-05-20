@@ -39,13 +39,15 @@ class Parser: NSObject, XMLParserDelegate {
                 qualifiedName qName: String?,
                 attributes attributeDict: [String : String] = [:]) {
         
+        foundCharacters = "";
+        
         if elementName == "wpt" {
-            
+
             if let lat = attributeDict["lat"] {
                 wpt.lat = Float(lat);
             }
             
-            if let long = attributeDict["long"] {
+            if let long = attributeDict["lon"] {
                 wpt.long = Float(long);
             }
             
@@ -57,7 +59,7 @@ class Parser: NSObject, XMLParserDelegate {
                 foundCharacters string: String) {
         foundCharacters += string;
     }
-    
+
     func parser(_ parser: XMLParser,
                 didEndElement elementName: String,
                 namespaceURI: String?,
@@ -72,20 +74,30 @@ class Parser: NSObject, XMLParserDelegate {
         }
         
         if elementName == "wpt" {
-            gpx.append(wpt);
+            let tempwpt = Wpt();
+            tempwpt.lat = wpt.lat
+            tempwpt.long = wpt.long
+            tempwpt.name = wpt.name
+            tempwpt.time = wpt.time
+            gpx.append(tempwpt)
         }
         
         foundCharacters = "";
+        
     }
     
     func parserDidEndDocument(_ parser: XMLParser) {
         for wpx in gpx {
-            print("\(wpx.name)\n\(wpx.time)");
+            print(wpx.name)
+            print(wpx.time)
+            print(String(describing: wpx.lat))
+            print(String(describing: wpx.long))
             print("\n")
         }
     }
     
 }
 
-var filepath = URL(fileURLWithPath: "/Document/Github/GPXParser/GPXParser/Location.gpx")
+var filepath = URL(fileURLWithPath: "/Users/maximebrunengo/Documents/GitHub/GPXParser/GPXParser/Location.gpx")
+
 Parser().test(filepath: filepath)
